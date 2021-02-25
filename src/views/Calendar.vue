@@ -1,8 +1,10 @@
+<style scoped>
+
+</style>
+
 <template>
 <div>
-  <span v-if="this.loading == true">Lädt...</span>
-  <span v-if="this.loading == false">Fertig geladen</span>
-  <button @click="refreshData"> Daten neu laden </button>
+  <Loader :loading="loading"/>
   <FullCalendar  :options="calendarOptions"  />
 </div>
 </template>
@@ -11,17 +13,32 @@
 import FullCalendar from '@fullcalendar/vue'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import Loader from '../components/Loader.vue'
 
 export default {
   components: {
-    FullCalendar // make the <FullCalendar> tag available
+    FullCalendar, // make the <FullCalendar> tag available
+    Loader
   },
   data() {
     return {
       loading : false,
       calendarOptions: {
-        plugins: [ dayGridPlugin, interactionPlugin ],
+        plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
         initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek reloadButton'
+        },
+        dateClick: (info) => alert("132"),
+        customButtons: {
+          reloadButton: {
+            text: 'Reload data',
+            click: _ => {this.refreshData()}
+            }
+        },      
         weekNumbers: true,
         events: [
         ]
@@ -45,15 +62,18 @@ export default {
           let d = {
             "title":apt.id,
             "start":startDate,
-            "end":endDate
+            "end":endDate,
           };
           this.calendarOptions.events.push(d);
         }
       }
     },
     refreshData () {
+      this.calendarOptions.events = [];
       this.loading = true;
-      this.fetchData().then(appointments=>this.parseAppointments(appointments)).then(()=>this.loading=false);
+      this.fetchData()
+      .then(appointments=>this.parseAppointments(appointments))
+      .then(()=>this.loading=false);
     }
   }
 }
