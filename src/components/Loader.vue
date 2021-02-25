@@ -18,7 +18,7 @@
     props: ['loading'],
     data () {
       return {
-        
+
       }
     },
     methods: {
@@ -32,7 +32,7 @@
 
 </script>
 
-<style>
+<style scoped>
   .backdrop {
     background: rgba(87, 87, 83, 0.5);
     position:fixed;

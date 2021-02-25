@@ -1,10 +1,11 @@
-<style scoped>
+<style>
 
 </style>
 
 <template>
 <div>
   <Loader :loading="loading"/>
+  <DateTimeSelect @close-modal="this.toggleAppointmentPicker" :toggled="appointmentPickerToggled" />
   <FullCalendar  :options="calendarOptions"  />
 </div>
 </template>
@@ -15,15 +16,19 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import Loader from '../components/Loader.vue'
+import DateTimeSelect from '../components/DateTimeSelect.vue'
 
 export default {
   components: {
     FullCalendar, // make the <FullCalendar> tag available
-    Loader
+    Loader,
+    DateTimeSelect
+    
   },
   data() {
     return {
       loading : false,
+      appointmentPickerToggled: false,
       calendarOptions: {
         plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
         initialView: 'dayGridMonth',
@@ -32,7 +37,7 @@ export default {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek reloadButton'
         },
-        dateClick: (info) => alert("132"),
+        dateClick: (info) => this.toggleAppointmentPicker(),
         customButtons: {
           reloadButton: {
             text: 'Reload data',
@@ -74,6 +79,13 @@ export default {
       this.fetchData()
       .then(appointments=>this.parseAppointments(appointments))
       .then(()=>this.loading=false);
+    },
+    toggleAppointmentPicker() {
+      if(this.appointmentPickerToggled) {
+        this.appointmentPickerToggled = false;
+      } else {
+        this.appointmentPickerToggled = true
+      }
     }
   }
 }
