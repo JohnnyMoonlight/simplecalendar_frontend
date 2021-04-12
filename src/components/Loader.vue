@@ -2,7 +2,7 @@
 
   <section class="">
     <div v-if="this.loading == true" class="backdrop">
-      <span class="loader" >Loading...<font-awesome-icon :icon="['fas', 'spinner']" spin /></span>
+      <b-spinner variant="success" type="grow" label="Spinning"></b-spinner>
     </div>
   </section>
 

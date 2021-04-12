@@ -3,11 +3,11 @@
 </style>
 
 <template>
-<div>
-  <Loader :loading="loading"/>
-  <DateTimeSelect @close-modal="this.toggleAppointmentPicker" :toggled="appointmentPickerToggled" />
-  <FullCalendar  :options="calendarOptions"  />
-</div>
+  <div>
+    <Loader :loading="loading"/>
+    <DateTimeSelect ref="dateTimeSelect" @saveNewAppointment="postData($event)"  @close-modal="this.toggleAppointmentPicker" :isLoggedIn="$auth.isAuthenticated" :rooms="rooms" :selectedDate="selectedDate" :toggled="appointmentPickerToggled" />
+    <FullCalendar  :options="calendarOptions"  />
+  </div>
 </template>
 
 <script>
@@ -29,7 +29,10 @@ export default {
     return {
       loading : false,
       appointmentPickerToggled: false,
+      selectedDate: null,
+      rooms:null,
       calendarOptions: {
+        height:"auto",
         plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
         initialView: 'dayGridMonth',
         headerToolbar: {
@@ -37,7 +40,9 @@ export default {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek reloadButton'
         },
-        dateClick: (info) => this.toggleAppointmentPicker(),
+        dateClick: (info) => {
+          this.toggleAppointmentPicker(info.date)
+        },
         customButtons: {
           reloadButton: {
             text: 'Reload data',
@@ -52,18 +57,38 @@ export default {
   },
   created (){
     this.refreshData();
+    this.fetchRooms();
   },
   methods: {
     async fetchData () {
-      const appointmentsRequest = await fetch("http://localhost:8081/allAppointments");
+      const appointmentsRequest = await fetch("api/allAppointments");
       const appointments = await appointmentsRequest.json();
       return appointments;
+    },
+    async postData(data) {
+      const appointmentsRequest = await fetch("api/createAppointment", {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      });
+      this.refreshData();
+      this.toggleAppointmentPicker();
+    },
+    async fetchRooms() {
+      const roomsRequest = await fetch("api/allRooms");
+      const rooms = await roomsRequest.json();
+      this.rooms = rooms;
+    },
+    debug (data) {
+      console.log(data);
     },
     parseAppointments (appointments) {
       if (appointments.length > 0) {
         for (let apt of appointments) {
-          let startDate = new Date(apt.startTime);
-          let endDate = new Date(apt.endTime);
+          let startDate = new Date(JSON.parse(apt.startTime));
+          let endDate = new Date(JSON.parse(apt.endTime));
           let d = {
             "title":apt.id,
             "start":startDate,
@@ -78,13 +103,14 @@ export default {
       this.loading = true;
       this.fetchData()
       .then(appointments=>this.parseAppointments(appointments))
-      .then(()=>this.loading=false);
+      .then(()=>this.loading=false)
     },
-    toggleAppointmentPicker() {
+    toggleAppointmentPicker(info) {
       if(this.appointmentPickerToggled) {
         this.appointmentPickerToggled = false;
       } else {
-        this.appointmentPickerToggled = true
+        this.appointmentPickerToggled = true;
+        this.selectedDate = info;
       }
     }
   }

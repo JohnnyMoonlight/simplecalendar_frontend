@@ -7,9 +7,9 @@
     width: 110%;
     z-index: 10000;
     top:-10%;
-    left:-10%
+    left:-10%;
   }
-  .picker {
+  .content {
     position:fixed;
     background: white;
     border-radius: 5px;
@@ -22,16 +22,23 @@
 
 
 <template lang="html">
-  <section v-if="toggled" class="date-time-select">
-    <div class="backdrop">
-      <div class="picker">
+  <section v-if="selectedDate" class="date-time-select">
+    <b-modal @close="cancelModal" @ok="saveAndCloseModal" :visible="toggled" id="my-modal" :title="'Create new appointment for ' + selectedDate.toLocaleDateString()">
+              
+            Raum:
+            <div>
+                <b-select v-model="selectedRoom" >
+                  <option v-for="room in rooms" v-bind:value="room.roomId"> {{room.name}}</option>
+                </b-select>
+              </div>
+            </div>
 
-      <h1>Select appointment</h1>
-      <Datetime :backdrop-click="true" :minute-step="15" type="datetime" />
-    <button>Speichern</button>
-    <button v-on:click="$emit('close-modal')">Schließen</button>
-      </div>
-    </div>
+              Start: <Datetime class="input-form" v-model="startDate" :minute-step="15" type="time" />
+
+              End: <Datetime v-model="endDate" :minute-step="15" type="time" />
+
+    </b-modal>
+
   </section>
 </template>
 
@@ -40,7 +47,7 @@ import { Datetime } from 'vue-datetime';
 
   export default  {
     name: 'date-time-select',
-    props: ["toggled"],
+    props: ["toggled", "selectedDate", "rooms", "isLoggedIn"],
     components: {
       Datetime
     },
@@ -49,14 +56,32 @@ import { Datetime } from 'vue-datetime';
     },
     data () {
       return {
-
+        selectedRoom: "",
+        startDate: "",
+        endDate: ""
       }
     },
     methods: {
+      cancelModal() {
+        this.toggle = false;
+      },
+      saveAndCloseModal() {
+        this.$emit('saveNewAppointment', this.returnAppointmentJson());
+      },
+      createAppointmentDateFromSelectedDateAndSelectedTime(selectedDate, selectedTime) {
+        let dateWithDate = new Date(selectedDate);
+        let dateWithTime = new Date(selectedTime);
 
-    },
-    computed: {
+        return new Date(dateWithDate.getFullYear(), dateWithDate.getMonth(), dateWithDate.getDate(), dateWithTime.getHours(), dateWithTime.getMinutes());
 
+      },
+      returnAppointmentJson() {
+        return {
+          roomId:this.selectedRoom,
+          startTime:this.createAppointmentDateFromSelectedDateAndSelectedTime(this.selectedDate, this.startDate),
+          endTime:this.createAppointmentDateFromSelectedDateAndSelectedTime(this.selectedDate, this.endDate)
+        }
+      }
     }
 }
 

@@ -1,12 +1,17 @@
 <template lang="html">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
+      <router-link to="/rooms">Rooms</router-link> |
       <router-link to="/calendar">Calendar</router-link>
-      <span v-if="userIsAdmin"> |
+      <span v-if="$auth.isAuthenticated"> |
         <router-link to="/menu">Settings</router-link>
       </span>
-
+        <span> |
+          <!-- show login when not authenticated -->
+          <span v-if="!$auth.isAuthenticated" @click="login">Log in</span>
+          <!-- show logout when authenticated -->
+          <span v-if="$auth.isAuthenticated" @click="logout">Log out</span>
+      </span>
     </div>
 </template>
 
@@ -20,12 +25,21 @@
     },
     data () {
       return {
-        userIsAdmin: true
+        userIsAdmin: true,
       }
     },
-    methods: {
-
+  methods: {
+    // Log the user in
+    login() {
+      this.$auth.loginWithRedirect();
     },
+    // Log the user out
+    logout() {
+      this.$auth.logout({
+        returnTo: window.location.origin
+      });
+    }
+  },
     computed: {
 
     }
