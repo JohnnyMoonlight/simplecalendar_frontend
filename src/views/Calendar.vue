@@ -5,7 +5,14 @@
 <template>
   <div>
     <Loader :loading="loading"/>
-    <DateTimeSelect ref="dateTimeSelect" @saveNewAppointment="postData($event)"  @close-modal="this.toggleAppointmentPicker" :isLoggedIn="$auth.isAuthenticated" :rooms="rooms" :selectedDate="selectedDate" :toggled="appointmentPickerToggled" />
+    <DateTimeSelect ref="dateTimeSelect"
+      @saveNewAppointment="postData($event)" 
+      @close-modal="this.toggleAppointmentPicker"
+      @modalClosed="this.appointmentPickerToggled = false"
+      :isLoggedIn="$auth.isAuthenticated"
+      :rooms="rooms"
+      :selectedDate="selectedDate"
+      :appointmentPickerToggled="appointmentPickerToggled" />
     <FullCalendar  :options="calendarOptions"  />
   </div>
 </template>
@@ -41,7 +48,7 @@ export default {
           right: 'dayGridMonth,timeGridWeek reloadButton'
         },
         dateClick: (info) => {
-          this.toggleAppointmentPicker(info.date)
+          this.toggleAppointmentPicker(info.date);
         },
         customButtons: {
           reloadButton: {
@@ -106,12 +113,10 @@ export default {
       .then(()=>this.loading=false)
     },
     toggleAppointmentPicker(info) {
-      if(this.appointmentPickerToggled) {
-        this.appointmentPickerToggled = false;
-      } else {
+
         this.appointmentPickerToggled = true;
         this.selectedDate = info;
-      }
+      
     }
   }
 }

@@ -22,24 +22,26 @@
 
 
 <template lang="html">
-  <section v-if="selectedDate" class="date-time-select">
-    <b-modal @close="cancelModal" @ok="saveAndCloseModal" :visible="toggled" id="my-modal" :title="'Create new appointment for ' + selectedDate.toLocaleDateString()">
-              
-            Raum:
-            <div>
-                <b-select v-model="selectedRoom" >
-                  <option v-for="room in rooms" v-bind:value="room.roomId"> {{room.name}}</option>
-                </b-select>
+
+    <section >
+      {{selectedDate}} {{appointmentPickerToggled}}
+      <b-modal ok-only v-if="selectedDate" class="date-time-select" @hide="cancelModal" @ok="saveAndCloseModal" :visible="appointmentPickerToggled" id="my-modal" :title="getModalTitleWithData(selectedDate)">
+                
+              Raum:
+              <div>
+                  <b-select v-model="selectedRoom" >
+                    <option v-for="room in rooms" v-bind:value="room.roomId"> {{room.name}}</option>
+                  </b-select>
+                </div>
               </div>
-            </div>
 
-              Start: <Datetime class="input-form" v-model="startDate" :minute-step="15" type="time" />
+                Start: <Datetime class="input-form" v-model="startDate" :minute-step="15" type="time" />
 
-              End: <Datetime v-model="endDate" :minute-step="15" type="time" />
+                End: <Datetime v-model="endDate" :minute-step="15" type="time" />
 
-    </b-modal>
+      </b-modal>
 
-  </section>
+    </section>
 </template>
 
 <script lang="js">
@@ -47,7 +49,7 @@ import { Datetime } from 'vue-datetime';
 
   export default  {
     name: 'date-time-select',
-    props: ["toggled", "selectedDate", "rooms", "isLoggedIn"],
+    props: ["appointmentPickerToggled", "selectedDate", "rooms", "isLoggedIn"],
     components: {
       Datetime
     },
@@ -62,8 +64,12 @@ import { Datetime } from 'vue-datetime';
       }
     },
     methods: {
+      getModalTitleWithData(date) {
+        return "Create new appointment for " + date.toLocaleDateString();
+      },
       cancelModal() {
-        this.toggle = false;
+        this.appointmentPickerToggled = false;
+        $emit('modalClosed', false);
       },
       saveAndCloseModal() {
         this.$emit('saveNewAppointment', this.returnAppointmentJson());
