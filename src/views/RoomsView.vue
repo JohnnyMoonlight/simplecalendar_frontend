@@ -5,7 +5,7 @@
     <div class="overflow-auto">
           <b-pagination
             v-model="currentPage"
-            :total-rows="rooms.length"
+            :total-rows="totalRows"
             :per-page="perPage"
             aria-controls="roomTable"
           />
@@ -72,40 +72,53 @@
       </b-modal>
 
       <div v-if="$auth.isAuthenticated">
-        <b-form  @submit="postData">
-          <b-form-group
-            id="input-group-1"
-            label="Room name:"
-            label-for="input-1"
-            description="Create a new room to book appointments."
-          >
-            <b-form-input
-              id="input-1"
-              v-model="form.name"
-              type="text"
-              placeholder="Enter room name"
-              required
-            ></b-form-input>
-          </b-form-group>
-            <b-button type="submit" variant="success">Submit</b-button>
+        <b-form>
+          <b-row cols="10" class="justify-content-md-center">
+            <b-col cols="8">
+                <b-form-group
+                id="input-group-1"
+                label="Room name:"
+                label-for="input-1"
+                description="Create a new room to book appointments."
+              >
+                  <b-form-input
+                    id="input-1"
+                    v-model="form.name"
+                    type="text"
+                    placeholder="Enter room name"
+                    required
+                  ></b-form-input>
+              </b-form-group>
+            </b-col>  
+            <b-col cols="2">  
+              <IconSelector @iconEmitted="setIcon($event)"></IconSelector>
+            </b-col>
+            </b-row>
+  
+            <b-button @click="postData" variant="success">Submit</b-button>
             <b-button type="reset" variant="danger">Reset</b-button>
         </b-form>
       </div>
-
     </div>
-
-  </section>
-
+     </section>
 </template>
 
 <script lang="js">
 
+import IconSelector from '../components/IconSelector'
 
   export default  {
     name: 'rooms-vue',
+  components: {
+    IconSelector
+  },
     props: [],
     data () {
       return {
+        selected: null,
+        options: [
+
+        ],
         rooms : [],
         fields: [{key:"index", sortable:true}, {key:"name", sortable:true}, "actions"],
         isLoggedIn:true,
@@ -113,6 +126,7 @@
         currentPage: 1,
         form: {
           name:"",
+          icon:"",
           roomId:null
         },
         infoModal: {
@@ -156,6 +170,9 @@
       hideDeleteModal() {
         this.$refs['deleteModal'].hide();
       },
+      setIcon(icon) {
+        this.form.icon = icon;
+      },
       async postData() {
       const roomsRequest = await fetch("api/createRoom", {
           method: 'POST',
@@ -186,7 +203,9 @@
       }
     },
     computed: {
-
+      totalRows() {
+        return this.rooms.length;
+      }
     }
 }
 
@@ -197,5 +216,6 @@
   .rooms-vue {
     text-align: center;
   }
+
 
 </style>

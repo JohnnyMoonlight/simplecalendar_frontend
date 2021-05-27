@@ -14,6 +14,7 @@
       :selectedDate="selectedDate"
       :appointmentPickerToggled="appointmentPickerToggled" />
     <FullCalendar  :options="calendarOptions"  />
+    <b-modal ok-only :title="this.eventModal.title" v-model="eventModal.showEventModal" id="my-modal">{{eventModal.content}}</b-modal>
   </div>
 </template>
 
@@ -38,9 +39,15 @@ export default {
       appointmentPickerToggled: false,
       selectedDate: null,
       rooms:null,
+      eventModal: {
+        title:"",
+        content:"",
+        showEventModal:false
+      },
       calendarOptions: {
         height:"auto",
         plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
+        eventClick: this.showEvent,
         initialView: 'dayGridMonth',
         headerToolbar: {
           left: 'prev,next today',
@@ -67,6 +74,11 @@ export default {
     this.fetchRooms();
   },
   methods: {
+    showEvent(clickInfo) {
+      this.eventModal.title = clickInfo.event.title;
+      this.eventModal.content = new Date();
+      this.eventModal.showEventModal = true;
+    },
     async fetchData () {
       const appointmentsRequest = await fetch("api/allAppointments");
       const appointments = await appointmentsRequest.json();
@@ -121,6 +133,5 @@ export default {
   }
 }
 
-var calendar;
 
 </script>
