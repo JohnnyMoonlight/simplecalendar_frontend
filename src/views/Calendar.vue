@@ -109,7 +109,7 @@ export default {
           let startDate = new Date(JSON.parse(apt.startTime));
           let endDate = new Date(JSON.parse(apt.endTime));
           let d = {
-            "title":apt.id,
+            "title":apt.room.name + ":" + apt.id,
             "start":startDate,
             "end":endDate,
           };
