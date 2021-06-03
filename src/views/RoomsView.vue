@@ -129,7 +129,7 @@ import IconSelector from '../components/IconSelector'
 
         ],
         rooms : [],
-        fields: [{key:"index", sortable:true}, {key:"name", sortable:true}, "icon", "actions"],
+        fields: [{key:"index", sortable:true}, {key:"name", sortable:true}, "actions"],
         isLoggedIn:true,
         perPage: 10,
         currentPage: 1,
