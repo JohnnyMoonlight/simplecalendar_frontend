@@ -13,12 +13,19 @@
           <b-table id="roomTable" :fields="fields" striped hover :items="rooms" :per-page="perPage" :current-page="currentPage">
 
             <template #cell(index)="data">
-              {{ data.index + 1 }}
+              <span>
+                {{ data.index + 1 }}
+              </span>
             </template>
 
             <template #cell(name)="data">
-              <span>{{data.item.name}}</span>
+              <span>
+                {{ data.value }}
+              <font-awesome-icon v-if="data.item.icon" :icon=data.item.icon />
+              <span v-else>No icon configured.</span>
+              </span>
             </template>
+
 
             <template #cell(actions)="row">
               <b-button-group>
@@ -71,28 +78,29 @@
         </ul>
       </b-modal>
 
-      <div v-if="$auth.isAuthenticated">
+      <div style="width:99%" v-if="$auth.isAuthenticated">
         <b-form>
-          <b-row cols="10" class="justify-content-md-center">
-            <b-col cols="8">
-                <b-form-group
-                id="input-group-1"
-                label="Room name:"
-                label-for="input-1"
-                description="Create a new room to book appointments."
-              >
+          <b-row class="justify-content-md-center">
+              <b-col cols="8">
+                  <b-form-group
+                  id="input-group-1"
+                  label="Room name:"
+                  label-for="input-1"
+                  description="Create a new room to book appointments."
+                  >
                   <b-form-input
-                    id="input-1"
-                    v-model="form.name"
-                    type="text"
-                    placeholder="Enter room name"
-                    required
-                  ></b-form-input>
-              </b-form-group>
-            </b-col>  
-            <b-col cols="2">  
-              <IconSelector @iconEmitted="setIcon($event)"></IconSelector>
-            </b-col>
+                      id="input-1"
+                      v-model="form.name"
+                      type="text"
+                      placeholder="Enter room name"
+                      required
+                  />
+                  </b-form-group>
+              </b-col> 
+
+              <b-col cols="2">  
+                <IconSelector @iconEmitted="setIcon($event)"></IconSelector>
+              </b-col>
             </b-row>
   
             <b-button @click="postData" variant="success">Submit</b-button>
@@ -104,7 +112,8 @@
 </template>
 
 <script lang="js">
-
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret, faCoffee, faArchway } from '@fortawesome/free-solid-svg-icons'
 import IconSelector from '../components/IconSelector'
 
   export default  {
@@ -120,7 +129,7 @@ import IconSelector from '../components/IconSelector'
 
         ],
         rooms : [],
-        fields: [{key:"index", sortable:true}, {key:"name", sortable:true}, "actions"],
+        fields: [{key:"index", sortable:true}, {key:"name", sortable:true}, "icon", "actions"],
         isLoggedIn:true,
         perPage: 10,
         currentPage: 1,
