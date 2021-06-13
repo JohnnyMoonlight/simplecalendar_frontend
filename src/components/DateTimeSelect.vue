@@ -66,7 +66,7 @@ import { Datetime } from 'vue-datetime';
 
   export default  {
     name: 'date-time-select',
-    props: ["appointmentPickerToggled", "selectedDate", "rooms", "isLoggedIn"],
+    props: ["appointmentPickerToggled", "selectedDate", "rooms"],
     components: {
       Datetime
     },

@@ -78,7 +78,7 @@
         </ul>
       </b-modal>
 
-      <div style="width:99%" v-if="$auth.isAuthenticated">
+      <div style="width:99%">
         <b-form>
           <b-row class="justify-content-md-center">
               <b-col cols="8">
@@ -190,7 +190,11 @@ import IconSelector from '../components/IconSelector'
           },
           body: JSON.stringify(this.form)
       });
-      this.fetchRooms();
+      if (roomsRequest.ok) {
+        this.fetchRooms();
+      } else if (roomsRequest.status == 403) {
+        console.log("Not authenticated.")
+      }
     },
       async deleteRoomWithId(id) {
         const deleteOptions = {"method":"delete"}

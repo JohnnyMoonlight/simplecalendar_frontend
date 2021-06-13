@@ -9,7 +9,6 @@
       @saveNewAppointment="postData($event)" 
       @close-modal="this.toggleAppointmentPicker"
       @modalClosed="this.appointmentPickerToggled = false"
-      :isLoggedIn="$auth.isAuthenticated"
       :rooms="rooms"
       :selectedDate="selectedDate"
       :appointmentPickerToggled="appointmentPickerToggled" />
@@ -92,8 +91,12 @@ export default {
           },
           body: JSON.stringify(data)
       });
-      this.refreshData();
-      this.toggleAppointmentPicker();
+      if (appointmentsRequest.ok) {
+        this.refreshData();
+        this.toggleAppointmentPicker();
+      } else if (appointmentsRequest.status==403) {
+        console.log("Not authenticated.")
+      }
     },
     async fetchRooms() {
       const roomsRequest = await fetch("api/allRooms");
