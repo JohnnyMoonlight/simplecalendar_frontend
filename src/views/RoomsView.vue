@@ -22,20 +22,20 @@
               <span>
                 {{ data.value }}
               <font-awesome-icon v-if="data.item.icon" :icon=data.item.icon />
-              <span v-else>No icon configured.</span>
+              <span v-else><small>No icon configured.</small></span>
               </span>
             </template>
 
 
             <template #cell(actions)="row">
               <b-button-group>
-                <b-button title="Feature under development..." :disabled="true" v-if="$auth.isAuthenticated" variant="success">
+                <b-button title="Feature under development..." :disabled="true" variant="success">
                   <span>Edit</span>
                 </b-button>
                 <b-button @click="info(row.item, row.index, $event.target)" variant="info">
                   Details
                 </b-button>
-                <b-button v-if="$auth.isAuthenticated" @click="showDeleteModal(row.item, row.index, $event.target)" variant="danger">
+                <b-button @click="showDeleteModal(row.item, row.index, $event.target)" variant="danger">
                   Delete
                 </b-button>
               </b-button-group>
